@@ -22,8 +22,19 @@ jobs:
         port: ${{ secrets.PORT }}
         script: |
           echo "Deploying to EC2 instance..."
-          cd /var/www/edificeweb/edificedevops
-          git pull origin main
+          cd /var/www/edificeweb
+
+           # Mark the directory as safe for Git
+          git config --global --add safe.directory /var/www/edificeweb
+
+          
+           # Remove old contents
+          echo "Deleting old contents..."
+          sudo rm -rf edificedevops
+
+          # Clone the repository
+          echo "Cloning the repository..."
+          git clone https://github.com/latestbob/edificedevops.git
 
           # Restart NGINX
           echo "Restarting NGINX service..."
