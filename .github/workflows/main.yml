@@ -9,7 +9,7 @@ jobs:
       - name: Setup SSH Key
         run: |
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/edificeone.pem
-          chmod 600 ~/edificeone.pem
+          chmod 400 ~/edificeone.pem
 
       # Test SSH connection
       - name: Test SSH Connection
@@ -24,6 +24,7 @@ jobs:
           username: ${{ secrets.USERNAME }}
           key: ~/edificeone.pem
           port: ${{ secrets.PORT }}
+          debug: true
           script: |
             # Navigate to the deployment directory
       
