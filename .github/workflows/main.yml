@@ -14,7 +14,7 @@ jobs:
       # Test SSH connection
       - name: Test SSH Connection
         run: |
-          sudo ssh -i ~/edificeone.pem -o StrictHostKeyChecking=no ${{ secrets.USERNAME }}@${{ secrets.HOST }} "echo Connected to EC2"
+          ssh -i ~/edificeone.pem -o StrictHostKeyChecking=no ${{ secrets.USERNAME }}@${{ secrets.HOST }} "echo Connected to EC2"
 
       # Deploy to EC2
       - name: Deploy to EC2
@@ -27,11 +27,10 @@ jobs:
           debug: true
           script: |
             # Navigate to the deployment directory
-      
             cd /var/www/edificeweb
             
             # Remove old repository content
-            sudo rm -rf ./*
+            sudo rm -rf /var/www/edificeweb/*
             
             # Clone the latest repository version
             git clone https://github.com/latestbob/edificedevops.git
