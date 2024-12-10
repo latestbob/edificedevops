@@ -1,40 +1,23 @@
-name: Deploy to EC2 nginx
-on: [push]
+name: Deploy to EC2
+
+on:
+  push:
+    branches:
+      - main
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
     steps:
-      # Decode the private key
-      - name: Setup SSH Key
-        run: |
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > /home/runner/edificeone.pem
-          chmod 400 /home/runner/edificeone.pem
+    - name: Checkout code
+      uses: actions/checkout@v3
 
-      # Start SSH agent and add the private key
-      - name: Start SSH agent and add key
-        run: |
-          eval $(ssh-agent -s)
-          ssh-add /home/runner/edificeone.pem
-
-      # Test SSH connection
-      - name: Test SSH Connection
-        run: |
-          ssh -i /home/runner/edificeone.pem -v -o StrictHostKeyChecking=no ${{ secrets.USERNAME }}@${{ secrets.HOST }} "echo Connected to EC2"
-
-      # Deploy to EC2
-      - name: Deploy to EC2
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          key: /home/runner/edificeone.pem
-          port: 22
-          debug: true
-          script: |
-            cd /var/www/edificeweb
-            sudo rm -rf /var/www/edificeweb/*
-            git clone https://github.com/latestbob/edificedevops.git
-            sudo chown -R www-data:www-data /var/www/edificeweb/edificedevops
-            sudo chmod -R 755 /var/www/edificeweb/edificedevops
-            sudo systemctl restart nginx
+    - name: executing remote ssh commands using ssh key
+      uses: appleboy/ssh-action@v1.2.0
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        key: ${{ secrets.KEY }}
+        port: ${{ secrets.PORT }}
+        script: whoami
