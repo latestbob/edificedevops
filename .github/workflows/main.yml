@@ -3,20 +3,20 @@ on: [push]
 
 jobs:
   deploy:
-    name: Deploy to EC2
     runs-on: ubuntu-latest
     steps:
-      # Checkout the repository
-      - name: Checkout Code
-        uses: actions/checkout@v3
-
-      - name: Decode PEM File
+      # Decode the private key
+      - name: Setup SSH Key
         run: |
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" | base64 -d > ~/edificeone.pem
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/edificeone.pem
           chmod 600 ~/edificeone.pem
 
+      # Test SSH connection
+      - name: Test SSH Connection
+        run: |
+          ssh -i ~/edificeone.pem -o StrictHostKeyChecking=no ${{ secrets.USERNAME }}@${{ secrets.HOST }} "echo Connected to EC2"
 
-      # Deploy to EC2 using SSH key and git clone
+      # Deploy to EC2
       - name: Deploy to EC2
         uses: appleboy/ssh-action@v1.2.0
         with:
@@ -25,19 +25,5 @@ jobs:
           key: ~/edificeone.pem
           port: ${{ secrets.PORT }}
           script: |
-            # Navigate to the deployment directory
-        
-            cd /var/www/edificeweb
-            
-            # Remove old repository content
-            sudo rm -rf ./*
-            
-            # Clone the latest repository version
-            git clone https://github.com/latestbob/edificedevops.git .
-            
-            # Set correct permissions
-            sudo chown -R www-data:www-data /var/www/edificeweb/edificedevops
-            sudo chmod -R 755 /var/www/edificeweb/edificedevops
-            
-            # Restart Nginx
-            sudo systemctl restart nginx
+            echo "Deploying to EC2..."
+            # Your deployment commands here
