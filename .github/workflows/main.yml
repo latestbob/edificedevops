@@ -10,13 +10,19 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
+      - name: Decode PEM File
+        run: |
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" | base64 -d > ~/edificeone.pem
+          chmod 600 ~/edificeone.pem
+
+
       # Deploy to EC2 using SSH key and git clone
       - name: Deploy to EC2
         uses: appleboy/ssh-action@v1.2.0
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          key: ~/edificeone.pem
           port: ${{ secrets.PORT }}
           script: |
             # Navigate to the deployment directory
