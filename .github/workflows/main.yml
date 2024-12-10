@@ -14,7 +14,7 @@ jobs:
       # Test SSH connection
       - name: Test SSH Connection
         run: |
-          ssh -i ~/edificeone.pem -o StrictHostKeyChecking=no ${{ secrets.USERNAME }}@${{ secrets.HOST }} "echo Connected to EC2"
+          sudo ssh -i ~/edificeone.pem -o StrictHostKeyChecking=no ${{ secrets.USERNAME }}@${{ secrets.HOST }} "echo Connected to EC2"
 
       # Deploy to EC2
       - name: Deploy to EC2
