@@ -18,12 +18,12 @@ jobs:
 
       # Deploy to EC2
       - name: Deploy to EC2
-        uses: appleboy/ssh-action@v1.2.0
+        uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           key: ~/edificeone.pem
-          port: ${{ secrets.PORT }}
+          port: 22
           debug: true
           script: |
             # Navigate to the deployment directory
