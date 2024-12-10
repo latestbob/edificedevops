@@ -8,36 +8,33 @@ jobs:
       # Decode the private key
       - name: Setup SSH Key
         run: |
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/edificeone.pem
-          chmod 400 ~/edificeone.pem
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > /home/runner/edificeone.pem
+          chmod 400 /home/runner/edificeone.pem
+
+      # Start SSH agent and add the private key
+      - name: Start SSH agent and add key
+        run: |
+          eval $(ssh-agent -s)
+          ssh-add /home/runner/edificeone.pem
 
       # Test SSH connection
       - name: Test SSH Connection
         run: |
-          ssh -i ~/edificeone.pem -o StrictHostKeyChecking=no ${{ secrets.USERNAME }}@${{ secrets.HOST }} "echo Connected to EC2"
+          ssh -i /home/runner/edificeone.pem -v -o StrictHostKeyChecking=no ${{ secrets.USERNAME }}@${{ secrets.HOST }} "echo Connected to EC2"
 
       # Deploy to EC2
       - name: Deploy to EC2
-        uses: appleboy/ssh-action@master
+        uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
-          key: ~/edificeone.pem
+          key: /home/runner/edificeone.pem
           port: 22
           debug: true
           script: |
-            # Navigate to the deployment directory
             cd /var/www/edificeweb
-            
-            # Remove old repository content
             sudo rm -rf /var/www/edificeweb/*
-            
-            # Clone the latest repository version
             git clone https://github.com/latestbob/edificedevops.git
-            
-            # Set correct permissions
             sudo chown -R www-data:www-data /var/www/edificeweb/edificedevops
             sudo chmod -R 755 /var/www/edificeweb/edificedevops
-            
-            # Restart Nginx
             sudo systemctl restart nginx
