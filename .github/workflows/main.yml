@@ -34,7 +34,7 @@ jobs:
 
           # Clone the repository
           echo "Cloning the repository..."
-          git clone https://github.com/latestbob/edificedevops.git
+          sudo git clone https://github.com/latestbob/edificedevops.git edificedevops
 
           # Restart NGINX
           echo "Restarting NGINX service..."
