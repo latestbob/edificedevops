@@ -20,4 +20,12 @@ jobs:
         username: ${{ secrets.USERNAME }}
         key: ${{ secrets.KEY }}
         port: ${{ secrets.PORT }}
-        script: whoami
+        script: |
+          echo "Deploying to EC2 instance..."
+          cd /var/www/edificeweb/edificedevops
+          git pull origin main
+
+          # Restart NGINX
+          echo "Restarting NGINX service..."
+          sudo systemctl restart nginx
+
