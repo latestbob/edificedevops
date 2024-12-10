@@ -1,4 +1,4 @@
-name: Deploy to EC2
+name: Deploy to EC2 nginx
 on: [push]
 
 jobs:
@@ -25,5 +25,19 @@ jobs:
           key: ~/edificeone.pem
           port: ${{ secrets.PORT }}
           script: |
-            echo "Deploying to EC2..."
-            # Your deployment commands here
+            # Navigate to the deployment directory
+      
+            cd /var/www/edificeweb
+            
+            # Remove old repository content
+            sudo rm -rf ./*
+            
+            # Clone the latest repository version
+            git clone https://github.com/latestbob/edificedevops.git
+            
+            # Set correct permissions
+            sudo chown -R www-data:www-data /var/www/edificeweb/edificedevops
+            sudo chmod -R 755 /var/www/edificeweb/edificedevops
+            
+            # Restart Nginx
+            sudo systemctl restart nginx
